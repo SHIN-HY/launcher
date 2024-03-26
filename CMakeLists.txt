@@ -8,21 +8,19 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(rosgraph_msgs REQUIRED)
-find_package(roscco_msgs REQUIRED)
 find_package(adma_ros_driver_msgs REQUIRED)
-find_package(autoware_auto_vehicle_msgs REQUIRED)
 
 add_executable(health_checker src/health_check.cpp)
 
 ament_target_dependencies(
   health_checker 
   rclcpp
+  std_msgs
   rosgraph_msgs
-  roscco_msgs
   adma_ros_driver_msgs
-  autoware_auto_vehicle_msgs
-  )
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

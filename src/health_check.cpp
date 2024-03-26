@@ -2,9 +2,8 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "rosgraph_msgs/msg/clock.hpp"
-#include "roscco_msgs/msg/can_info.hpp"
+#include "std_msgs/msg/header.hpp"
 #include "adma_ros_driver_msgs/msg/adma_data_scaled.hpp"
-#include "autoware_auto_vehicle_msgs/msg/steering_report.hpp"
 
 using namespace std::chrono_literals;
 
@@ -16,8 +15,8 @@ class Checker : public rclcpp::Node
       ouster_sub = this->create_subscription<rosgraph_msgs::msg::Clock>
         ("/clock", 10, std::bind(&Checker::ouster_callback, this, std::placeholders::_1));
 
-      roscco_sub = this->create_subscription<roscco_msgs::msg::CANInfo>
-        ("/can_info", 10, std::bind(&Checker::roscco_callback, this, std::placeholders::_1));
+      roscco_sub = this->create_subscription<std_msgs::msg::Header>
+        ("/time_from_roscco", 10, std::bind(&Checker::roscco_callback, this, std::placeholders::_1));
       
       adma_sub = this->create_subscription<adma_ros_driver_msgs::msg::AdmaDataScaled>
         ("/genesys/adma/data_scaled", 10, std::bind(&Checker::adma_callback, this, std::placeholders::_1));
@@ -41,7 +40,7 @@ class Checker : public rclcpp::Node
   private:
 
     rclcpp::Subscription<rosgraph_msgs::msg::Clock>::SharedPtr ouster_sub;
-    rclcpp::Subscription<roscco_msgs::msg::CANInfo>::SharedPtr roscco_sub;
+    rclcpp::Subscription<std_msgs::msg::Header>::SharedPtr roscco_sub;
     rclcpp::Subscription<adma_ros_driver_msgs::msg::AdmaDataScaled>::SharedPtr adma_sub;
     rclcpp::TimerBase::SharedPtr timer;
 
@@ -63,9 +62,9 @@ class Checker : public rclcpp::Node
       ouster_check = msg.clock.nanosec;
     }    
 
-    void roscco_callback(const roscco_msgs::msg::CANInfo &msg)
+    void roscco_callback(const std_msgs::msg::Header &msg)
     {
-      roscco_check = msg.header.stamp.nanosec;
+      roscco_check = msg.stamp.nanosec;
     }    
 
     void adma_callback(const adma_ros_driver_msgs::msg::AdmaDataScaled &msg)
@@ -103,9 +102,11 @@ class Checker : public rclcpp::Node
         isAdma = false;
 
       }
+
       adma_check_prev = adma_check;
       roscco_check_prev = roscco_check;
       ouster_check_prev = ouster_check;
+      
       RCLCPP_INFO(rclcpp::get_logger(""),"------------HEALTH_CHECK------------");
 
       if(isOuster)
