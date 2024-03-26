@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+    <arg name="launch_ouster" default="true" description="launch ouster"/>
+    <arg name="launch_roscco_to_aw" default="true" description="launch roscco_to_aw"/>
+    <arg name="launch_roscco" default="true" description="launch roscco"/>
+    <arg name="launch_tf" default="true" description="launch tf"/>
+    <arg name="launch_adma" default="true" description="launch adma"/>
+    <arg name="launch_ros2_socketcan" default="true" description="launch ros2_socketcan"/>
+    <arg name="run_health_check" default="true" description="launch adma"/>
+
+    <group if="$(var launch_ouster)">
+        <include file="$(find-pkg-share ouster_ros)/launch/driver.launch.py">
+        </include>
+    </group>
+
+    <group if="$(var launch_roscco)">
+        <include file="$(find-pkg-share roscco)/launch/roscco.launch.xml">
+        </include>
+    </group>
+
+    <group if="$(var launch_adma)">
+        <include file="$(find-pkg-share adma_ros2_driver)/launch/adma_driver.launch.py">
+        </include>
+    </group>
+    
+    <group if="$(var launch_roscco_to_aw)">
+        <include file="$(find-pkg-share roscco_to_aw)/launch/roscco2AW.launch.xml">
+        </include>
+    </group>
+
+    <group if="$(var launch_ros2_socketcan)">
+        <include file="$(find-pkg-share ros2_socketcan)/launch/socket_can_bridge.launch.xml">
+        </include>
+    </group>
+    
+    <group if="$(var run_health_check)">
+      <node pkg="launcher" exec="health_checker" name="health_checker" args="--ros-args --log-level debug --log-level rcl:=info" />
+    </group>
+
+    <group if="$(var launch_tf)">
+        <node pkg="tf2_ros" exec="static_transform_publisher" name="os_sensor_to_velodyne_right" 
+          args="2.40998 -0.885587 -1.567 1.93328 3.10138 3.12247 os_sensor velodyne_right"/>
+          
+        <node pkg="tf2_ros" exec="static_transform_publisher" name="os_sensor_to_velodyne_left" 
+          args="2.44644 0.989306 -1.54904 1.18267 0.0167743 -0.0292165 os_sensor velodyne_left"/>
+
+        <node pkg="tf2_ros" exec="static_transform_publisher" name="base_link_to_os_sensor" 
+          args="0.63 0.0 1.735 0.0 0 0 base_link os_sensor"/>
+
+        <node pkg="tf2_ros" exec="static_transform_publisher" name="base_link_to_imu_adma" 
+          args="0.45 0.0 0.45 0.0 0.0 0.0 base_link imu_link"/>
+
+        <node pkg="tf2_ros" exec="static_transform_publisher" name="base_link_to_gnss" 
+          args="0.38 0.0 1.695 0.0 0.0 0.0 base_link gnss"/>
+    </group>
+
+
+</launch>
+
