@@ -44,7 +44,7 @@
     </group>
 
     <group if="$(var run_qt_ros2)">
-      <node pkg="qt_ros2_test" exec="exec" name="qt_ros2" args="" />
+      <node pkg="qt_ros2" exec="exec" name="qt_ros2" args="" />
     </group>
 
     <group if="$(var run_twist_controller)">
