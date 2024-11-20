@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
-    <arg name="launch_ouster" default="true" description="launch ouster"/>
-    <arg name="launch_roscco_to_aw" default="true" description="launch roscco_to_aw"/>
+    <arg name="launch_ouster" default="false" description="launch ouster"/>
     <arg name="launch_roscco" default="true" description="launch roscco"/>
-    <arg name="launch_tf" default="true" description="launch tf"/>
     <arg name="launch_adma" default="true" description="launch adma"/>
+    <arg name="launch_autoware_interface" default="true" description="launch roscco_to_aw"/>
     <arg name="launch_ros2_socketcan" default="true" description="launch ros2_socketcan"/>
-    <arg name="run_health_check" default="true" description="launch adma"/>
+    <arg name="run_qt_ros2" default="true" description="launch qt_ros2"/>
+    <arg name="run_twist_controller" default="true" description="launch twist_controller"/>
+    <arg name="launch_tf" default="true" description="launch tf"/>
 
     <group if="$(var launch_ouster)">
         <include file="$(find-pkg-share ouster_ros)/launch/driver.launch.py">
@@ -23,18 +24,31 @@
         </include>
     </group>
     
-    <group if="$(var launch_roscco_to_aw)">
-        <include file="$(find-pkg-share roscco_to_aw)/launch/roscco2AW.launch.xml">
+    <group if="$(var launch_autoware_interface)">
+        <include file="$(find-pkg-share autoware_interface)/launch/autoware_interface.launch.xml">
         </include>
     </group>
 
     <group if="$(var launch_ros2_socketcan)">
-        <include file="$(find-pkg-share ros2_socketcan)/launch/socket_can_bridge.launch.xml">
+        <push-ros-namespace namespace="socketcan/vehicle"/>
+        <include file="$(find-pkg-share ros2_socketcan)/launch/socket_can_receiver.launch.py">
+          <arg name="interface" value="can1"/>
         </include>
     </group>
-    
-    <group if="$(var run_health_check)">
-      <node pkg="launcher" exec="health_checker" name="health_checker" args="--ros-args --log-level debug --log-level rcl:=info" />
+
+    <group if="$(var launch_ros2_socketcan)">
+        <push-ros-namespace namespace="socketcan/roscco"/>
+        <include file="$(find-pkg-share ros2_socketcan)/launch/socket_can_receiver.launch.py">
+          <arg name="interface" value="can0"/>
+        </include>
+    </group>
+
+    <group if="$(var run_qt_ros2)">
+      <node pkg="qt_ros2_test" exec="exec" name="qt_ros2" args="" />
+    </group>
+
+    <group if="$(var run_twist_controller)">
+      <node pkg="twist_controller" exec="twist_controller" name="twist_controller" args="" />
     </group>
 
     <group if="$(var launch_tf)">
@@ -53,7 +67,5 @@
         <node pkg="tf2_ros" exec="static_transform_publisher" name="base_link_to_gnss" 
           args="0.38 0.0 1.695 0.0 0.0 0.0 base_link gnss"/>
     </group>
-
-
 </launch>
 
