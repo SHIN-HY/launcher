@@ -1,44 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
-    <arg name="launch_ouster" default="false" description="launch ouster"/>
-    <arg name="launch_roscco" default="true" description="launch roscco"/>
-    <arg name="launch_adma" default="true" description="launch adma"/>
-    <arg name="launch_autoware_interface" default="true" description="launch roscco_to_aw"/>
+    <arg name="launch_ouster" default="true" description="launch ouster"/>
+    <arg name="run_can_interface" default="true" description="run can_interface"/>
     <arg name="launch_ros2_socketcan" default="true" description="launch ros2_socketcan"/>
     <arg name="run_qt_ros2" default="true" description="launch qt_ros2"/>
-    <arg name="run_twist_controller" default="true" description="launch twist_controller"/>
-    <arg name="launch_tf" default="true" description="launch tf"/>
+    <arg name="run_twist_controller" default="false" description="launch twist_controller"/>
+    <arg name="launch_tf" default="false" description="launch tf"/>
 
     <group if="$(var launch_ouster)">
         <include file="$(find-pkg-share ouster_ros)/launch/driver.launch.py">
         </include>
     </group>
-
-    <group if="$(var launch_roscco)">
-        <include file="$(find-pkg-share roscco)/launch/roscco.launch.xml">
-        </include>
-    </group>
-
-    <group if="$(var launch_adma)">
-        <include file="$(find-pkg-share adma_ros2_driver)/launch/adma_driver.launch.py">
-        </include>
-    </group>
     
     <group if="$(var launch_autoware_interface)">
-        <include file="$(find-pkg-share autoware_interface)/launch/autoware_interface.launch.xml">
+        <node pkg="can_interface" exec="can_interface_node" name="can_interface_node" args="" />
         </include>
     </group>
 
     <group if="$(var launch_ros2_socketcan)">
-        <push-ros-namespace namespace="socketcan/vehicle"/>
-        <include file="$(find-pkg-share ros2_socketcan)/launch/socket_can_receiver.launch.py">
-          <arg name="interface" value="can1"/>
-        </include>
-    </group>
-
-    <group if="$(var launch_ros2_socketcan)">
-        <push-ros-namespace namespace="socketcan/roscco"/>
-        <include file="$(find-pkg-share ros2_socketcan)/launch/socket_can_receiver.launch.py">
+        <include file="$(find-pkg-share ros2_socketcan)/launch/socket_can_bridge.launch.xml">
           <arg name="interface" value="can0"/>
         </include>
     </group>
