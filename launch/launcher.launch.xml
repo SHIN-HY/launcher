@@ -3,18 +3,17 @@
     <arg name="launch_ouster" default="true" description="launch ouster"/>
     <arg name="run_can_interface" default="true" description="run can_interface"/>
     <arg name="launch_ros2_socketcan" default="true" description="launch ros2_socketcan"/>
-    <arg name="run_qt_ros2" default="true" description="launch qt_ros2"/>
+    <arg name="run_qt_ros2_test" default="true" description="launch qt_ros2"/>
     <arg name="run_twist_controller" default="false" description="launch twist_controller"/>
-    <arg name="launch_tf" default="false" description="launch tf"/>
+    <arg name="launch_tf" default="true" description="launch tf"/>
 
     <group if="$(var launch_ouster)">
         <include file="$(find-pkg-share ouster_ros)/launch/driver.launch.py">
         </include>
     </group>
     
-    <group if="$(var launch_autoware_interface)">
+    <group if="$(var run_can_interface)">
         <node pkg="can_interface" exec="can_interface_node" name="can_interface_node" args="" />
-        </include>
     </group>
 
     <group if="$(var launch_ros2_socketcan)">
@@ -23,8 +22,8 @@
         </include>
     </group>
 
-    <group if="$(var run_qt_ros2)">
-      <node pkg="qt_ros2" exec="exec" name="qt_ros2" args="" />
+    <group if="$(var run_qt_ros2_test)">
+      <node pkg="qt_ros2_test" exec="exec" name="qt_ros2_test" args="" />
     </group>
 
     <group if="$(var run_twist_controller)">
