@@ -14,6 +14,7 @@
 
     <group if="$(var run_can_interface)">
         <node pkg="can_interface" exec="can_interface_node" name="can_interface_node" args="">
+            <param from="$(find-pkg-share can_interface)/config/can_interface.param.yaml"/>
         </node>
     </group>
 
