@@ -8,7 +8,7 @@
     <arg name="launch_tf" default="false" description="launch tf"/>
 
     <group if="$(var launch_ouster)">
-        <include file="$(find-pkg-share ouster_roshttps://github.com/SHIN-HY/launcher.git)/launch/driver.launch.py">
+        <include file="$(find-pkg-share ouster_ros)/launch/driver.launch.py">
         </include>
     </group>
 
