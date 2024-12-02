@@ -8,44 +8,48 @@
     <arg name="launch_tf" default="false" description="launch tf"/>
 
     <group if="$(var launch_ouster)">
-        <include file="$(find-pkg-share ouster_roshttps://github.com/SHIN-HY/launcher.git)/launch/driver.launch.py">
+        <include file="$(find-pkg-share ouster_ros)/launch/driver.launch.py">
         </include>
     </group>
 
     <group if="$(var run_can_interface)">
-        <node pkg="can_interface" exec="can_interface_node" name="can_interface_node" args="" />
+        <node pkg="can_interface" exec="can_interface_node" name="can_interface_node" args="">
+            <param from="$(find-pkg-share can_interface)/config/can_interface.param.yaml"/>
+        </node>
     </group>
 
     <group if="$(var launch_ros2_socketcan)">
-        <push-ros-namespace namespace="socketcan/Interface"/>
+        <push-ros-namespace namespace="socketcan/interface"/>
         <include file="$(find-pkg-share ros2_socketcan)/launch/socket_can_bridge.launch.xml">
-          <arg name="interface" value="can1"/>
+            <arg name="interface" value="can0"/>
         </include>
     </group>
 
     <group if="$(var launch_ros2_socketcan)">
-        <push-ros-namespace namespace="socketcan/Cart"/>
+        <push-ros-namespace namespace="socketcan/motor"/>
         <include file="$(find-pkg-share ros2_socketcan)/launch/socket_can_receiver.launch.py">
-          <arg name="interface" value="can0"/>
+            <arg name="interface" value="can1"/>
         </include>
     </group>
 
     <group if="$(var run_qt_ros2_test)">
-      <node pkg="qt_ros2_test" exec="exec" name="qt_ros2_test" args="" />
+        <node pkg="qt_ros2_test" exec="exec" name="qt_ros2_test" args="">
+        </node>
     </group>
 
     <group if="$(var run_twist_controller)">
-      <node pkg="twist_controller" exec="twist_controller" name="twist_controller" args="" />
+        <node pkg="twist_controller" exec="twist_controller" name="twist_controller" args="">
+        </node>
     </group>
 
     <group if="$(var launch_tf)">
         <node pkg="tf2_ros" exec="static_transform_publisher" name="base_link_to_os_sensor" 
-          args="0.25 0.0 1.0 0.0 0.0 0.0 base_link os_sensor"/>
+            args="0.25 0.0 1.0 0.0 0.0 0.0 base_link os_sensor"/>
 
         <node pkg="tf2_ros" exec="static_transform_publisher" name="base_link_to_imu_adma" 
-          args="0.45 0.0 0.45 0.0 0.0 0.0 base_link imu_link"/>
+            args="0.45 0.0 0.45 0.0 0.0 0.0 base_link imu_link"/>
 
         <node pkg="tf2_ros" exec="static_transform_publisher" name="base_link_to_gnss" 
-          args="0.38 0.0 1.695 0.0 0.0 0.0 base_link gnss"/>
+            args="0.38 0.0 1.695 0.0 0.0 0.0 base_link gnss"/>
     </group>
 </launch>
